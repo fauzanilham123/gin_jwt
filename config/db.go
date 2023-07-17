@@ -21,7 +21,7 @@ func ConnectDatabase() *gorm.DB {
         panic(err.Error())
     }
 
-    db.AutoMigrate(&models.Movie{}, &models.AgeRatingCategory{}, &models.User{})
+    db.AutoMigrate(&models.Movie{}, &models.AgeRatingCategory{}, &models.User{}, &models.Genre{})
 
     return db
 }

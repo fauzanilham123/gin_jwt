@@ -14,6 +14,8 @@ type movieInput struct {
     Title               string `json:"title" form:"title"`
     Year                int    `json:"year" form:"year"`
     AgeRatingCategoryID uint   `json:"age_rating_category_id" form:"id"`
+    GenreID             uint   `json:"genre" form:"genre_id"`
+    
 }
 
 // GetAllMovies godoc
@@ -46,6 +48,7 @@ func CreateMovie(c *gin.Context) {
     // Validate input
     var input movieInput
     var rating models.AgeRatingCategory
+    var genre models.Genre
     if err := c.ShouldBindJSON(&input); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
@@ -56,8 +59,13 @@ func CreateMovie(c *gin.Context) {
         return
     }
 
+    if err := db.Where("id = ?", input.GenreID).First(&genre).Error; err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "GenreID not found!"})
+        return
+    }
+
     // Create Movie
-    movie := models.Movie{Title: input.Title, Year: input.Year, AgeRatingCategoryID: input.AgeRatingCategoryID}
+    movie := models.Movie{Title: input.Title, Year: input.Year, AgeRatingCategoryID: input.AgeRatingCategoryID, GenreID: input.GenreID}
     db.Create(&movie)
 
     c.JSON(http.StatusOK, gin.H{"data": movie})
